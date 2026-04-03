@@ -20,6 +20,8 @@ def generate_and_compare_hashes(text):
     input_bits = len(text.encode()) * 8
     print("########################################################## TEST DANYCH WEJSCIOWYCH DLUGOSCI " +
           str(input_bits) + " BITOW ##########################################################")
+    print("Kodowany tekst: " + text)
+    print()
 
     hashes = {}
     for name, function in functions.items():
