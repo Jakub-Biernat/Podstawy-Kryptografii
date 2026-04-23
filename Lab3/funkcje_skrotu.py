@@ -13,44 +13,41 @@ def text_to_bits(text, encoding='utf-8'):
     bits = ''.join(format(byte, '08b') for byte in bytes_data)
     return bits
 
-def generate_and_compare_hashes(texts):
+def compare_hashes(texts):
     functions = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512']
 
     input_bits = []
     times = {name: [] for name in functions}
-    hash_bits = {name: [] for name in functions}
-    hashes = {}
+    hash_lengths = {name: [] for name in functions}
 
     for text in texts:
-        input_bits.append(len(text.encode()) * 8)
-        for name, function in functions.items():
+        input_bits.append(len(text_to_bits(text)))
+        for function in functions:
             start = time.perf_counter()
-            function.update(text.encode())
-            hash = function.hexdigest()
+            hash = generate_hash(text, function)
             stop = time.perf_counter()
 
-            hashes[name] = hash
-            times[name].append(stop - start)
-            hash_bits[name].append(len(hash) * 4)
+            times[function].append(stop - start)
+            hash_lengths[function].append(len(hash) * 4)
 
     plt.figure(figsize=(12, 6))
 
     plt.subplot(1, 2, 1)
-    for name in functions:
-        plt.plot(input_bits, hash_bits[name], label=name)
+    for function in functions:
+        plt.plot(input_bits, hash_lengths[function], label=function)
 
     plt.xlabel("Długość danych wejściowych (bity)")
-    plt.ylabel("Długość hasha (bity)")
-    plt.title("Długość hasha od długości danych wejściowych")
+    plt.ylabel("Długość wygenerowanego hasha (bity)")
+    plt.title("Długość hasha w zależności od długości danych wejściowych")
     plt.legend()
     plt.grid()
 
     plt.subplot(1, 2, 2)
-    for name in functions:
-        plt.plot(input_bits, times[name], label=name)
+    for function in functions:
+        plt.plot(input_bits, times[function], label=function)
     plt.xlabel("Długość danych wejściowych (bity)")
-    plt.ylabel("Czas wykonania (sekundy)")
-    plt.title("Czas wykonania od długości danych wejściowych")
+    plt.ylabel("Czas generowania hasha (sekundy)")
+    plt.title("Czas generowania hasha w zależności od długości danych wejściowych")
     plt.legend()
     plt.grid()
 
@@ -58,6 +55,7 @@ def generate_and_compare_hashes(texts):
     plt.show()
 
 def main():
-    print(generate_hash("Kot", 'sha1'))
+    texts = ["a" * i for i in range(100000, 1000000, 100000)]
+    compare_hashes(texts)
 
 main()
