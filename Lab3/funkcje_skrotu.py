@@ -63,6 +63,8 @@ def main():
     print("Wygenerowany hash dla słowa 'Owad': " + generate_hash("Owad", "md5"))
     #Po sprawdzeniu w wyszukiwarce, hash ten jest powszechnie znany
 
-
+    #Podpunkt 4
+    #MD5 nie jest funkcją bezpieczną, ponieważ znaleziono dla niej kolizje, pierwsze już w 2004 roku.
+    #Dodatkowo MD5 jest bardzo szybka, co ułatwia ataki brute-force.
 
 main()
