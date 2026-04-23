@@ -124,14 +124,49 @@ def test_modes_error_propagation():
 
         byte_diff = byte_difference(padded_text, decrypted)
         decrypted = decrypted.decode('utf-8', errors='ignore')
-        print(f"Propagacja błędu {mode_name}")
+        print(f"\nPropagacja błędu {mode_name}")
         print(f"Odszyfrowany tekst: {decrypted}")
         if byte_diff == 1:
-            print(f"{mode_name}: 1 bajt został zmieniony, brak propagacji na inne bajty")
+            print("1 bajt został zmieniony, brak propagacji na inne bajty")
         elif byte_diff <= 16:
-            print(f"{mode_name}: 1 blok uszkodzony, zmianie uległo {byte_diff} bajtów")
+            print(f"1 blok uszkodzony, zmianie uległo {byte_diff} bajtów")
         else:
-            print(f"{mode_name}: Propagacja błędu, zmianie uległo {byte_diff} bajtów")
+            print(f"Propagacja błędu, zmianie uległo {byte_diff} bajtów")
+
+def xor(a, b):
+    return bytes(x ^ y for x, y in zip(a, b))
+
+def encrypt_cbc_ecb(text, key, iv):
+    cipher_ecb = generate_cipher(AES.MODE_ECB, key)
+
+    text = add_padding(text)
+    ciphertext = b""
+    prev_block = iv
+
+    for i in range(0, len(text), 16):
+        block = text[i : i + 16]
+        block = xor(block, prev_block)
+        encrypted = cipher_ecb.encrypt(block)
+        ciphertext += encrypted
+        prev_block = encrypted
+
+    return iv + ciphertext
+
+def decrypt_cbc_ecb(key, ciphertext):
+    decipher_ecb = generate_cipher(AES.MODE_ECB, key)
+
+    iv = ciphertext[:16]
+    ciphertext = ciphertext[16:]
+    decrypted = b""
+    prev_block = iv
+
+    for i in range(0, len(ciphertext), 16):
+        block = ciphertext[i : i + 16]
+        dec = decipher_ecb.decrypt(block)
+        decrypted += xor(dec, prev_block)
+        prev_block = block
+
+    return decrypted
 
 def main():
     #Podpunkt 1
@@ -140,5 +175,17 @@ def main():
 
     #Podpunkt 2
     test_modes_error_propagation()
+
+    #Podpunkt 3
+    text = "Ala ma kota."
+    key = get_random_bytes(16)
+    iv = get_random_bytes(16)
+    ciphertext = encrypt_cbc_ecb(text, key, iv)
+    decrypted = decrypt_cbc_ecb(key, ciphertext)
+    decrypted = decrypted.decode('utf-8', errors='ignore')
+    print("\nTest implementacji CBC przy uzyciu ECB")
+    print(f"Oryginalny tekst: {text}")
+    print(f"Odszyfrowany tekst: {decrypted}")
+
 
 main()
