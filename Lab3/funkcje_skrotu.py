@@ -55,7 +55,14 @@ def compare_hashes(texts):
     plt.show()
 
 def main():
+    #Podpunkt 2
     texts = ["a" * i for i in range(100000, 1000000, 100000)]
     compare_hashes(texts)
+
+    #Podpunkt 3
+    print("Wygenerowany hash dla słowa 'Owad': " + generate_hash("Owad", "md5"))
+    #Po sprawdzeniu w wyszukiwarce, hash ten jest powszechnie znany
+
+
 
 main()
