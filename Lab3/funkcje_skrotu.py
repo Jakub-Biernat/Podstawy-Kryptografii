@@ -36,7 +36,7 @@ def compare_hashes(texts):
 
     ax1.set_xlabel("Długość danych wejściowych (bity)")
     ax1.set_ylabel("Długość wygenerowanego hasha (bity)")
-    ax1.set_title("Długość hasha w zależności od długości danych wejściowych")
+    ax1.set_title("Długość hasha w zależności od długości danych")
     ax1.legend()
     ax1.grid()
     ax1.ticklabel_format(style='plain', axis='x')
@@ -47,12 +47,13 @@ def compare_hashes(texts):
 
     ax2.set_xlabel("Długość danych wejściowych (bity)")
     ax2.set_ylabel("Czas generowania hasha (sekundy)")
-    ax2.set_title("Czas generowania hasha w zależności od długości danych wejściowych")
+    ax2.set_title("Czas generowania hasha w zależności od długości danych")
     ax2.legend()
     ax2.grid()
     ax2.ticklabel_format(style='plain', axis='x')
 
     plt.tight_layout()
+    plt.savefig("Wykresy.png", dpi=300)
     plt.show()
 
 def find_collision(function, prefix_bits):
@@ -72,10 +73,41 @@ def find_collision(function, prefix_bits):
         else:
             seen[prefix] = text
 
+def bit_difference(hash1, hash2):
+    bit_hash1 = bin(int(hash1, 16))[2:].zfill(len(hash1) * 4)
+    bit_hash2 = bin(int(hash2, 16))[2:].zfill(len(hash2) * 4)
+    return sum(bit1 != bit2 for bit1, bit2 in zip(bit_hash1, bit_hash2))
+
+def flip_bit(text):
+    bytes = bytearray(text, 'utf-8')
+
+    byte_index = choice(range(len(bytes)))
+    bit_index = choice(range(8))
+    bytes[byte_index] ^= (1 << bit_index)
+
+    return bytes.decode('utf-8', errors='ignore')
+
+def avalanche_test(function, tests_num):
+    results = []
+
+    for _ in range(tests_num):
+        text = ''.join(choice(ALPHABET) for _ in range(16))
+        hash1 = generate_hash(text, function)
+
+        modified_text = flip_bit(text)
+        hash2 = generate_hash(modified_text, function)
+
+        diff = bit_difference(hash1, hash2)
+        results.append(diff / (len(hash1) * 4))
+
+    avg = sum(results) / len(results)
+
+    return avg
+
 def main():
     #Podpunkt 2
     texts = ["a" * i for i in range(100000, 1000000, 100000)]
-    #compare_hashes(texts)
+    compare_hashes(texts)
 
     #Podpunkt 3
     print(f"Wygenerowany hash dla słowa 'Owad': {generate_hash("Owad", "md5")}")
@@ -88,13 +120,18 @@ def main():
     # Podpunkt 5
     attempts, text1, text2, prefix = find_collision("sha3_512", 12)
     print(f"\nKolizja na pierwszych 12 bitach (SHA-3-512) znaleziona po {attempts} próbach:")
-    print("Tekst 1:", text1)
-    print("Tekst 2:", text2)
-    print("Wspólne 12 bitów:", prefix)
-    print("Hash 1:", generate_hash(text1, "sha3_512"))
-    print("Hash 2:", generate_hash(text2, "sha3_512"))
+    print(f"Tekst 1: {text1}")
+    print(f"Tekst 2: {text2}")
+    print(f"Wspólne 12 bitów: {prefix}")
+    print(f"Hash 1: {generate_hash(text1, "sha3_512")}")
+    print(f"Hash 2: {generate_hash(text2, "sha3_512")}")
 
     # Podpunkt 6
+    print("\nAvalanche test (SHA-3-512):")
+    tests_num = 200
+    print(f"Po {tests_num} próbach, średni procent zmienionych bitów po zmianie jednego bitu na wejściu: "
+          f"{avalanche_test("sha3_512", tests_num)}")
+    #Test się powiódł
 
 
 main()
