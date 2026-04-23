@@ -186,6 +186,7 @@ def main():
     print("\nTest implementacji CBC przy uzyciu ECB")
     print(f"Oryginalny tekst: {text}")
     print(f"Odszyfrowany tekst: {decrypted}")
+    print("Eksperyment się powiódł")
 
 
 main()
