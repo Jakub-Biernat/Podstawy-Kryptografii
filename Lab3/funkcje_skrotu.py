@@ -1,21 +1,20 @@
 import hashlib
-import sys
 import time
 import matplotlib.pyplot as plt
 
+
+def generate_hash(text, function):
+    hash = hashlib.new(function)
+    hash.update(text.encode())
+    return hash.hexdigest()
+
+def text_to_bits(text, encoding='utf-8'):
+    bytes_data = text.encode(encoding)
+    bits = ''.join(format(byte, '08b') for byte in bytes_data)
+    return bits
+
 def generate_and_compare_hashes(texts):
-    functions = {
-        'MD5': hashlib.md5(),
-        'SHA1': hashlib.sha1(),
-        'SHA2_224': hashlib.sha224(),
-        'SHA2_256': hashlib.sha256(),
-        'SHA2_384': hashlib.sha384(),
-        'SHA2_512': hashlib.sha512(),
-        'SHA3_224': hashlib.sha3_224(),
-        'SHA3_256': hashlib.sha3_256(),
-        'SHA3_384': hashlib.sha3_384(),
-        'SHA3_512': hashlib.sha3_512(),
-    }
+    functions = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512']
 
     input_bits = []
     times = {name: [] for name in functions}
@@ -59,13 +58,6 @@ def generate_and_compare_hashes(texts):
     plt.show()
 
 def main():
-    texts = [
-        "a",
-        "a" * 10,
-        "a" * 100,
-        "a" * 1000,
-    ]
-
-    generate_and_compare_hashes(texts)
+    print(generate_hash("Kot", 'sha1'))
 
 main()
