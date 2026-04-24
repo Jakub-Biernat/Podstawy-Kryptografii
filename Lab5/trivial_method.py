@@ -1,7 +1,7 @@
 import sys
 from secrets import randbelow
 
-def divide_shares(n, k, s):
+def split_shares(n, k, s):
     shares = [randbelow(k) for _ in range(n - 1)]
     sum_shares = sum(shares)
     s_n = (s - sum_shares) % k
@@ -14,7 +14,7 @@ def join_shares(shares, k):
     return s
 
 if __name__ == '__main__':
-    #Wywołanie: py ./metoda_trywialna.py n k
+    #Wywołanie: py ./trivial_method n k
     n = int(sys.argv[1])
     k = int(sys.argv[2])
     s = randbelow(k)
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     print("Podzial sekretu: metoda trywialna")
     print(f"Wygenerowany sekret: {s}")
 
-    shares = divide_shares(n, k, s)
+    shares = split_shares(n, k, s)
     print("\nFaza podzialu, wygenerowane podzialy: ")
     for i in range(len(shares)):
         print(f"Udzial {i + 1}: {shares[i]}")
