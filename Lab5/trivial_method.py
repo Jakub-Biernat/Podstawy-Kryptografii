@@ -38,3 +38,12 @@ if __name__ == '__main__':
     recreated_s = join_shares(shares, k)
     print(f"Odtworzony sekret: {recreated_s}")
 
+    #Określ, dla jakich wartości metoda ta nie jest bezpieczna.
+    #Metoda jest niebezpieczna dla małych wartości k, ponieważ posiadając
+    #n - 1 udziałów, możemy metodą brute force odgadnąć brakujący udział.
+
+    #Wskaż podstawowe wady wynikające z użycia trywialnego podziału sekretu.
+    #Potrzeba wszystkich udziałów do odtworzenia sekretu
+    #Brak możliwości odtworzenia sekretu jeśli utracimy jeden udział
+    #Wymagamy pełnej uczciwości od udziałowców
+
