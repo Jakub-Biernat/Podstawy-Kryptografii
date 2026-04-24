@@ -35,6 +35,11 @@ def join_shares_shamirs(shares, p):
 
     return s
 
+def print_shares(shares, text_before):
+    print(text_before)
+    for i, share in enumerate(shares):
+        print(f"Udzial {i + 1}: {share}")
+
 if __name__ == '__main__':
     #Wywołanie: py ./shamirs_scheme n t
     n = int(sys.argv[1])
@@ -49,11 +54,29 @@ if __name__ == '__main__':
 
     print(f"\nWygenerowana liczba p: {p}")
 
-    print("\nWygenerowane udzialy:")
     shares = split_shares_shamirs(n, p, t, s)
-    for i, share in enumerate(shares):
-        print(f"Udzial {i + 1}: {share}")
+    print_shares(shares, "\nWygenerowane udzialy")
 
-    print()
-    print(join_shares_shamirs(shares[:1], p))
+    print("\nGenerowanie sekretu przy użyciu n udziałów")
+    recreated_s = join_shares_shamirs(shares, p)
+    print(f"Wygenerowany sekret: {recreated_s}")
+
+    print("\nGenerowanie sekretu przy użyciu t udziałów")
+    sub_shares = shares.copy()
+    while len(sub_shares) > t:
+        index_to_pop = number.getRandomRange(0, len(sub_shares))
+        sub_shares.pop(index_to_pop)
+    print_shares(sub_shares, "Uzyte udzialy:")
+    recreated_s = join_shares_shamirs(sub_shares, p)
+    print(f"Wygenerowany sekret: {recreated_s}")
+
+    print("\nGenerowanie sekretu przy użyciu t - 1 udziałów")
+    sub_shares = shares.copy()
+    while len(sub_shares) > t - 1:
+        index_to_pop = number.getRandomRange(0, len(sub_shares))
+        sub_shares.pop(index_to_pop)
+    print_shares(sub_shares, "Uzyte udzialy:")
+    recreated_s = join_shares_shamirs(sub_shares, p)
+    print(f"Wygenerowany sekret: {recreated_s}")
+
 
