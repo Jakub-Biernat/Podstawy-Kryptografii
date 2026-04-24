@@ -4,13 +4,13 @@ from Crypto.Util import number
 PRIME_BITS = 32
 
 def split_shares_shamirs(n, p, t, s):
-    coeffs = [s] + [number.getRandomRange(1, p - 1) for _ in range(t-1)]
+    coeffs = [number.getRandomRange(1, p - 1) for _ in range(t-1)]
     shares = []
 
     for x in range(1, n + 1):
-        s_i = 0
+        s_i = s
         for j, coeff_j in enumerate(coeffs):
-            s_i += coeff_j * x ** j
+            s_i += coeff_j * x ** (j + 1)
 
         s_i = s_i % p
         shares.append((x, s_i))
@@ -20,7 +20,20 @@ def split_shares_shamirs(n, p, t, s):
 def join_shares_shamirs(shares, p):
     s = 0
 
-    for i, share in enumerate(shares):
+    for i, (xi, yi) in enumerate(shares):
+        numerator = 1
+        denominator = 1
+
+        for j, (xj, _) in enumerate(shares):
+            if i != j:
+                numerator = (numerator * (-xj)) % p
+                denominator = (denominator * (xi - xj)) % p
+
+        lagrange = numerator * pow(denominator, -1, p)
+
+        s = (s + yi * lagrange) % p
+
+    return s
 
 if __name__ == '__main__':
     #Wywołanie: py ./shamirs_scheme n t
@@ -40,4 +53,7 @@ if __name__ == '__main__':
     shares = split_shares_shamirs(n, p, t, s)
     for i, share in enumerate(shares):
         print(f"Udzial {i + 1}: {share}")
+
+    print()
+    print(join_shares_shamirs(shares[:1], p))
 
