@@ -79,4 +79,6 @@ if __name__ == '__main__':
     recreated_s = join_shares_shamirs(sub_shares, p)
     print(f"Wygenerowany sekret: {recreated_s}")
 
+    #Jaka jest minimalna, wymagana liczba udziałów aby algorytm działał poprawnie?
+    #2, ponieważ dla t = 1 wartość udziału będzie równa wartości sekretu
 
