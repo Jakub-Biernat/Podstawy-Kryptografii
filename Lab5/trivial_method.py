@@ -1,8 +1,8 @@
 import sys
-from secrets import randbelow
+from Crypto.Util import number
 
 def split_shares(n, k, s):
-    shares = [randbelow(k) for _ in range(n - 1)]
+    shares = [number.getRandomRange(0, k) for _ in range(n - 1)]
     sum_shares = sum(shares)
     s_n = (s - sum_shares) % k
     shares.append(s_n)
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     #Wywołanie: py ./trivial_method n k
     n = int(sys.argv[1])
     k = int(sys.argv[2])
-    s = randbelow(k)
+    s = number.getRandomRange(0, k)
 
     print("Podzial sekretu: metoda trywialna")
     print(f"Wygenerowany sekret: {s}")
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     print(f"Odtworzony sekret: {recreated_s}")
 
     print("\nEksperyment: odtwarzanie sekretu bez jednego udzialu")
-    pop_index = randbelow(n)
+    pop_index = number.getRandomRange(0, n)
     print(f"Usunięty udzial {pop_index + 1}: {shares.pop(pop_index)}")
     print("Faza odtwarzania sekretu")
     recreated_s = join_shares(shares, k)
