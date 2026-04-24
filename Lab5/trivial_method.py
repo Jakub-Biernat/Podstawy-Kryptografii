@@ -24,8 +24,8 @@ if __name__ == '__main__':
 
     shares = split_shares(n, k, s)
     print("\nFaza podzialu, wygenerowane podzialy: ")
-    for i in range(len(shares)):
-        print(f"Udzial {i + 1}: {shares[i]}")
+    for i, share in enumerate(shares):
+        print(f"Udzial {i + 1}: {share}")
 
     print("\nFaza odtwarzania sekretu")
     recreated_s = join_shares(shares, k)
