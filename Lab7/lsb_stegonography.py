@@ -49,9 +49,9 @@ def extract_message(text):
 
     return text[s + len(start):e]
 
-def lsb_watermark(image, message):
+def lsb_stegonography(image, message):
     h, w = image.shape[:2]
-    watermark_image = image.copy()
+    stegonography_image = image.copy()
 
     total_channels = h * w * 3
 
@@ -69,17 +69,17 @@ def lsb_watermark(image, message):
         y = pixel_index // w
         x = pixel_index % w
 
-        watermark_image[y, x, channel] = (watermark_image[y, x, channel] & 254) | int(message_bits[i])
+        stegonography_image[y, x, channel] = (stegonography_image[y, x, channel] & 254) | int(message_bits[i])
 
-    return watermark_image
+    return stegonography_image
 
-def decode_watermark_image(image):
+def decode_stegonography_image(image):
     bits = extract_last_bits(image)
     text = bits_to_text(bits)
     message = extract_message(text)
     return message
 
-def show_results(image, text, watermark_image, watermark_text):
+def show_results(image, text, stegonography_image, stegonography_text):
     plt.figure(figsize=(10, 5))
 
     plt.subplot(1, 2, 1)
@@ -88,8 +88,8 @@ def show_results(image, text, watermark_image, watermark_text):
     plt.axis("off")
 
     plt.subplot(1, 2, 2)
-    plt.imshow(cv2.cvtColor(watermark_image, cv2.COLOR_BGR2RGB))
-    plt.title(f"Obraz ze znakiem wodnym\nWiadomość: {watermark_text}")
+    plt.imshow(cv2.cvtColor(stegonography_image, cv2.COLOR_BGR2RGB))
+    plt.title(f"Obraz z ukrytą wiadomością\nWiadomość: {stegonography_text}")
     plt.axis("off")
 
     plt.tight_layout()
@@ -99,11 +99,11 @@ def main():
     image = cv2.imread(sys.argv[1])
     message = sys.argv[2]
 
-    text = decode_watermark_image(image)
-    watermark_image = lsb_watermark(image, message)
-    watermark_text = decode_watermark_image(watermark_image)
+    text = decode_stegonography_image(image)
+    stegonography_image = lsb_stegonography(image, message)
+    stegonography_text = decode_stegonography_image(stegonography_image)
 
-    show_results(image, text, watermark_image, watermark_text)
+    show_results(image, text, stegonography_image, stegonography_text)
 
     #Czy taki sposób ukrywania informacji w obrazie jest odporny na ataki i próby
     #zniszczenia osadzonej wiadomości.
