@@ -96,6 +96,7 @@ def show_results(image, text, stegonography_image, stegonography_text):
     plt.show()
 
 def main():
+    #Uruchomienie: py .\lsb_stegonography.py obrazek wiadomosc
     image = cv2.imread(sys.argv[1])
     message = sys.argv[2]
 
