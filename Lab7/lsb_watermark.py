@@ -1,10 +1,9 @@
 import sys
 import cv2
-from secrets import choice
 import matplotlib.pyplot as plt
 
 def add_code_to_message(message):
-    return "#$%" + message + "#$%"
+    return "$$$" + message + "###"
 
 def text_to_bits(text):
     return ''.join(f'{ord(c):08b}' for c in text)
@@ -39,14 +38,14 @@ def extract_last_bits(image):
     return ''.join(bits)
 
 def extract_message(text):
-    start = "#$%"
-    end = "#$%"
+    start = "$$$"
+    end = "###"
 
     s = text.find(start)
     e = text.find(end, s + len(start))
 
     if s == -1 or e == -1:
-        return ""
+        return "BRAK"
 
     return text[s + len(start):e]
 
@@ -63,13 +62,9 @@ def lsb_watermark(image, message):
     if n_message_bits > total_channels:
         raise ValueError("Wiadomosc jest za dluga dla tych wymiarow obrazu")
 
-    start_channel = choice(range(total_channels - n_message_bits + 1))
-
     for i in range(n_message_bits):
-        idx = start_channel + i
-
-        pixel_index = idx // 3
-        channel = idx % 3
+        pixel_index = i // 3
+        channel = i % 3
 
         y = pixel_index // w
         x = pixel_index % w
@@ -84,12 +79,12 @@ def decode_watermark_image(image):
     message = extract_message(text)
     return message
 
-def show_results(image, watermark_image, watermark_text):
+def show_results(image, text, watermark_image, watermark_text):
     plt.figure(figsize=(10, 5))
 
     plt.subplot(1, 2, 1)
     plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-    plt.title("Oryginalny obraz")
+    plt.title(f"Oryginalny obraz\nWiadomość: {text}")
     plt.axis("off")
 
     plt.subplot(1, 2, 2)
@@ -104,11 +99,11 @@ def main():
     image = cv2.imread(sys.argv[1])
     message = sys.argv[2]
 
+    text = decode_watermark_image(image)
     watermark_image = lsb_watermark(image, message)
     watermark_text = decode_watermark_image(watermark_image)
 
-    show_results(image, watermark_image, watermark_text)
-
+    show_results(image, text, watermark_image, watermark_text)
 
     #Czy taki sposób ukrywania informacji w obrazie jest odporny na ataki i próby
     #zniszczenia osadzonej wiadomości.
