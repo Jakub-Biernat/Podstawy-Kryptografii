@@ -74,7 +74,7 @@ def lsb_watermark(image, message):
         y = pixel_index // w
         x = pixel_index % w
 
-        watermark_image[y, x, channel] = (watermark_image[y, x, channel] & ~1) | int(message_bits[i])
+        watermark_image[y, x, channel] = (watermark_image[y, x, channel] & 254) | int(message_bits[i])
 
     return watermark_image
 
@@ -84,6 +84,21 @@ def decode_watermark_image(image):
     message = extract_message(text)
     return message
 
+def show_results(image, watermark_image, watermark_text):
+    plt.figure(figsize=(10, 5))
+
+    plt.subplot(1, 2, 1)
+    plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    plt.title("Oryginalny obraz")
+    plt.axis("off")
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(cv2.cvtColor(watermark_image, cv2.COLOR_BGR2RGB))
+    plt.title(f"Obraz ze znakiem wodnym\nWiadomość: {watermark_text}")
+    plt.axis("off")
+
+    plt.tight_layout()
+    plt.show()
 
 def main():
     image = cv2.imread(sys.argv[1])
@@ -91,6 +106,8 @@ def main():
 
     watermark_image = lsb_watermark(image, message)
     watermark_text = decode_watermark_image(watermark_image)
+
+    show_results(image, watermark_image, watermark_text)
 
 
     #Czy taki sposób ukrywania informacji w obrazie jest odporny na ataki i próby
