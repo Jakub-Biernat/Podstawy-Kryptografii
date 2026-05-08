@@ -3,7 +3,8 @@ import cv2
 from secrets import choice
 import matplotlib.pyplot as plt
 
-
+def add_code_to_message(message):
+    return "#$%" + message + "#$%"
 
 def text_to_bits(text):
     return ''.join(f'{ord(c):08b}' for c in text)
@@ -37,12 +38,25 @@ def extract_last_bits(image):
 
     return ''.join(bits)
 
+def extract_message(text):
+    start = "#$%"
+    end = "#$%"
+
+    s = text.find(start)
+    e = text.find(end, s + len(start))
+
+    if s == -1 or e == -1:
+        return ""
+
+    return text[s + len(start):e]
+
 def lsb_watermark(image, message):
     h, w = image.shape[:2]
     watermark_image = image.copy()
 
     total_channels = h * w * 3
 
+    message = add_code_to_message(message)
     message_bits = text_to_bits(message)
     n_message_bits = len(message_bits)
 
@@ -66,14 +80,15 @@ def lsb_watermark(image, message):
 
 def decode_watermark_image(image):
     bits = extract_last_bits(image)
-    return bits_to_text(bits)
+    text = bits_to_text(bits)
+    message = extract_message(text)
+    return message
 
 
 def main():
     image = cv2.imread(sys.argv[1])
     message = sys.argv[2]
 
-    no_watermark_text = decode_watermark_image(image)
     watermark_image = lsb_watermark(image, message)
     watermark_text = decode_watermark_image(watermark_image)
 
